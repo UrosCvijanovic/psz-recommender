@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Početna</a> |
+        <a href="{{ url_for('regresija') }}">Procena cene</a> |
+        <a href="{{ url_for('klasterizacija') }}">Klasterizacija</a> |
+        <a href="{{ url_for('preporuke_stranica') }}">Top5</a>
+    </nav>
+<hr>
+    {% block body %}{% endblock %}
+</body>
+</html>

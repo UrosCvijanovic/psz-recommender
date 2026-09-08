@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<h2>Klasteri</h2>
+
+<!-- 1. Izbor kategorije (GET, osvezava stranicu) -->
+<form method="get" action="/klasterizacija">
+    <select name="kategorija" onchange="this.form.submit()">
+        <option value=""> -- izaberi kategoriju -- </option>
+        {% for k in kategorije %}
+            <option value="{{k}}" {% if k == izabrana %} selected {% endif %}> {{k}} </option>
+        {% endfor %}
+    </select>
+    <button type="submit"> Prikazi </button>
+</form>
+
+{% if atributi %}
+<form method="post">
+    <input type="hidden" name="kategorija" value="{{ izabrana }}">
+
+    {% for a in atributi %}
+        <label> {{ a }}
+            <input type="number" name="tez_{{ a }}", min="0" max="100" value="0"> %
+        </label> </br>
+    {% endfor %}
+
+    <label> Broj Klasteri: <input type="number" name="k" min="2" max="10", value="3"> </label>
+    <button type="submit">Klasteruj</button>
+</form>
+{% endif %}
+
+{% if greska %}
+  <p style="color: red;"><strong>{{ greska }}</strong></p>
+{% endif %}
+
+{% if rezultat %}
+<p>Inercija: {{ rezultat.inercija }}</p>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Klaster</th>
+        <th>Broj proizvoda</th>
+        <th>Centar</th>
+        <th>Medijana cene</th>
+        <th>Brendovi</th>
+        <th>Primeri (najskuplji)</th>
+    </tr>
+    {% for c in rezultat.klasteri %}
+     <tr>
+         <td> {{c.broj}} </td>
+         <td> {{c.n}} </td>
+         <td>
+            {% for atr, v in c.centar.items() %}{{ atr }}: {{ v }}<br>{% endfor %}
+        </td>
+        <td>{{ c.cena_medijana }}</td>
+        <td>{{ c.brendovi.keys() | join(', ') }}</td>
+         <td>
+            {% for p in c.primeri %}{{ p.naziv }} {{ p.cena }}<br>{% endfor %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<img src="{{ url_for('static', filename='klasteri.png') }}?v={{ range(1, 999999) | random }}">
+{% endif %}
+
+{% endblock %}

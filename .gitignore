@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Scrapy
+.scrapy/
+crawls/
+*.jsonl
+
+# Podaci i modeli
+podaci/
+practice/
+notebooks/
+baza/*.sql
+
+# Generisano
+aplikacija/static/klasteri.png
+docs/plots/*.png
+
+# OS
+Thumbs.db
+.DS_Store

@@ -1,0 +1,12 @@
+{% macro kartica(p) %}
+<div class="kartica">
+    {% if p.slika %}
+        <img src="{{ p.slika }}" width="120">
+    {% endif %}
+    <div> {{ p.naziv }} </div>
+    <div><strong>{{ p.cena }} RSD</strong></div>
+    {% if p.rastojanje is defined %}
+        <small> rastojanje: {{ p.rastojanje }} </small>
+    {% endif %}
+</div>
+{% endmacro %}

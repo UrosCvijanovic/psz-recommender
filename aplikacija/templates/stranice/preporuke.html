@@ -1,0 +1,55 @@
+{% from 'makroi.html' import kartica %}
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+<h2> TOP 5 preporuka </h2>
+
+{% if rezultat %}
+
+<p>Izabrani proizvod</p>
+<div>
+    {{ kartica(rezultat.polazni) }}
+</div>
+
+<p>{{ rezultat.preporuke | length }} preporuka</p>
+<div class="kartice" style="display: flex; flex-wrap: wrap; gap: 12px">
+    {% for p in rezultat.preporuke %}
+    <a href="{{ p.url }}" target="_blank">{{ kartica(p) }}</a>
+    {% endfor %}
+</div>
+
+{% else %}
+
+<form method="get">
+    <select name="kategorija" onchange="this.form.submit()">
+        <option value=""> -- izaberi kategoriju -- </option>
+        {% for k in kategorije %}
+            <option value="{{k}}" {% if k == izabrana %} selected {% endif %}> {{k}} </option>
+        {% endfor %}
+    </select>
+    <button type="submit"> Prikazi </button>
+</form>
+
+{% if lista %}
+    <form method="get">
+        <input type="hidden" name="kategorija" value="{{ izabrana }}">
+        <input type="text" name="upit" placeholder="pretraga po nazivu">
+        <button type="submit"> Trazi </button>
+    </form>
+
+    <p>{{ lista | length }} proizvoda</p>
+    <div class="kartice" style="display: flex; flex-wrap: wrap; gap: 12px">
+        {% for p in lista %}
+            <a href="?kategorija={{ izabrana }}&indeks={{ p.indeks }}">{{ kartica(p) }}</a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}
