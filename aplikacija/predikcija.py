@@ -2,7 +2,9 @@ import json
 import numpy as np
 from pathlib import Path
 
-MODELI = json.loads(Path("../modeli/obuceni.json").read_text(encoding="utf-8"))
+#MODELI = json.loads(Path("../modeli/obuceni.json").read_text(encoding="utf-8"))
+KOREN = Path(__file__).resolve().parent.parent
+MODELI = json.loads((KOREN / "modeli" / "obuceni.json").read_text(encoding="utf-8"))
 
 def kategorije():
     return sorted(MODELI.keys())

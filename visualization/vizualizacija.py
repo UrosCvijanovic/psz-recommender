@@ -1,12 +1,13 @@
-import pandas as pd
+import os
 import matplotlib
-from obrada import db
+import pandas as pd
 matplotlib.use("Agg") # bez GUI-ja
 import matplotlib.pyplot as plt
-import os
+from pathlib import Path
+from obrada import db
 
-
-IZLAZ = "../docs/plots/"
+IZLAZ = Path(__file__).resolve().parent / "plots"
+IZLAZ.mkdir(parents=True, exist_ok=True)
 
 def grafikon_kategorije(df):
     ukupno = len(df)

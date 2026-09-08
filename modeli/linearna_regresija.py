@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from modeli.linear_regression import LinearRegression
 from obrada.priprema.kategorije import ves_masine, frizideri, televizori
 
-IZLAZ = Path("modeli/obuceni.json")
+IZLAZ = Path(__file__).resolve().parent / "obuceni.json"
 MODULI = [ves_masine, televizori, frizideri]
 
 def napravi_matricu(df, numericki, kategoricki, indikatori=()):

@@ -1,13 +1,11 @@
-from pathlib import Path
-import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from modeli.k_means import KMeans
 from obrada import db
 from obrada.priprema.kategorije import ves_masine, frizideri, televizori
-import pandas as pd
 
 
-IZLAZ = Path("modeli/obuceni.json")
 MODULI = [ves_masine]
 
 def napravi_matricu(df, numericki, kategoricki, indikatori=()):
