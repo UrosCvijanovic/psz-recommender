@@ -14,10 +14,13 @@ crawls/
 *.jsonl
 
 # Podaci i modeli
-podaci/
+kod/obrada/podaci/
 practice/
 notebooks/
 baza/*.sql
+kod/obrada/podaci/
+kod/scrapper/.scrapy/
+kod/scrapper/crawls/
 
 # Generisano
 aplikacija/static/klasteri.png
@@ -26,3 +29,11 @@ docs/plots/*.png
 # OS
 Thumbs.db
 .DS_Store
+
+
+kod/aplikacija/static/klasteri.png
+kod/modeli/klusteri.png
+kod/modeli/klusteri_frizider.png
+kod/modeli/silueta_*.png
+kod/modeli/silueta_*.json
+kod/visualization/*_loss_data.json

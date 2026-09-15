@@ -1,29 +1,29 @@
 services:
   db:
     image: postgres:17
-    container_name: local_pgdb
+    container_name: test_pgdb
     ports:
-     - "5432:5432"
+     - "5433:5432"
     environment:
       POSTGRES_DB: psz
       POSTGRES_USER: uros
       POSTGRES_PASSWORD: n21wVyLRCCckFotr
     
     volumes:
-      - pgdb-data:/var/lib/postgresql/data
+      - test-pgdb-data:/var/lib/postgresql/data
+      - ./baza:/docker-entrypoint-initdb.d:ro
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin4_container
+    container_name: pgadmin4_test_container
     ports:
-      - "8888:80"
+      - "8889:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: uros@domain-name.com
       PGADMIN_DEFAULT_PASSWORD: n21wVyLRCCckFotr
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
-      - ./baza:/docker-entrypoint-initdb.d:ro
+      - pgadmin-test-data:/var/lib/pgadmin
 
 volumes:
-  pgdb-data:
-  pgadmin-data:
+  test-pgdb-data:
+  pgadmin-test-data:
