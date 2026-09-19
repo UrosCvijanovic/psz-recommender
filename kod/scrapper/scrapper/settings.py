@@ -16,7 +16,7 @@ ADDONS = {}
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "psz-recommender studentski projekat (kontakt: uros.cvijanovic@gmail.com)",
+USER_AGENT = "psz-recommender studentski projekat (kontakt: uros.cvijanovic@gmail.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False

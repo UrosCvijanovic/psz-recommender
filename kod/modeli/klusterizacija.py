@@ -1,6 +1,5 @@
 #import matplotlib
 #matplotlib.use("Agg")
-import json
 from pathlib import Path
 
 import numpy as np
@@ -8,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from modeli.training.k_means import KMeans
 from obrada import db
-from obrada.priprema.kategorije import ves_masine, frizideri, televizori
+from obrada.priprema.kategorije import frizideri
 
 MODULI = [frizideri]
 
@@ -30,39 +29,6 @@ def main():
         print(df.columns)
         d = df[["zapremina_frizidera", "cena"]].dropna()
 
-        """
-        skorovi = []
-        for k in range(2, 15):
-            print(f"K= {k}")
-            rez = []
-            for s in [1, 7, 42, 77, 123]:
-                km = KMeans(k=k, seed=s).fit(d)
-                sc = km.silhouette_score
-                rez.append(sc)
-            najbolja = max(rez)
-            print(f" Najbolja silueta: {najbolja:.4f}")
-            skorovi.append(najbolja)
-
-        opsezi = list(range(2, 15))
-        najbolji_k = opsezi[int(np.argmax(skorovi))]
-        plt.figure(figsize=(8, 5))
-        plt.plot(opsezi, skorovi, marker="o")
-        plt.axvline(najbolji_k, color="red", linestyle="--", label=f"maksimum: k={najbolji_k}")
-        plt.xlabel("broj klustera (k)")
-        plt.ylabel("siluetni koeficijent")
-        plt.ylim(0, 0.5)
-        plt.title("Siluetni koeficijent (zapremina_frizidera, cena)")
-        plt.grid(alpha=0.3)
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(Path(__file__).resolve().parent / "silueta_frizideri.png", dpi=150)
-        plt.close()
-
-        json.dump(dict(zip(map(str, opsezi), skorovi)),
-                  open(Path(__file__).resolve().parent / "silueta_frizideri.json", "w"),
-                  indent=2)
-        
-        """
         km = KMeans(k=3, seed=77).fit(d)
 
         # centri nazad u originalne jedinice

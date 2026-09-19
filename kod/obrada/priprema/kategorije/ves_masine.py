@@ -35,17 +35,12 @@ def pripremi(ponude, specs):
     brend_freq = ponude.brend.value_counts()
 
     p_vm["brend_model"] = p_vm.brend.where(p_vm.brend.isin(brend_freq[brend_freq >= 30].index), "OSTALO")
-    print(p_vm.brend_model.nunique(), "brendova posle sazimanja")
 
     # =============== Razdvajanje Kapaciteta pranja i susenja (ves masine, susilice, ves masine + susilice) ===============
     ima_pranje = set(vm[vm.naziv.isin(["Kapacitet", "Kapacitet pranja"])].ponuda_id)
     ima_susenje = set(vm[vm.naziv == "Kapacitet sušenja"].ponuda_id)
-    print("Ima pranje: ", len(ima_pranje))
-    print("Ima susenje: ", len(ima_susenje))
-    print("Ima oba: ", len(list(set(ima_pranje) & set(ima_susenje))))
 
     p_vm["tip"] = p_vm["id"].apply(tip_ves_masine, ima_pranje=ima_pranje, ima_susenje=ima_susenje)
-    print(p_vm.tip.value_counts(dropna=False))
 
 
     # =============== Kapacitet pranja i susenja u kg ===============

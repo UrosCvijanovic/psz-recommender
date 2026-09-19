@@ -13,7 +13,7 @@ def ek_rang(red):
 def pokrivenost(vm, nazivi, oznaka):
     ids = set(vm[vm.naziv.isin(nazivi)].ponuda_id)
     n = vm.ponuda_id.nunique()
-    print(f"{oznaka:25} {len(ids):4} / {n}  ({100*len(ids)/n:.1f}%)")
+    #print(f"{oznaka:25} {len(ids):4} / {n}  ({100*len(ids)/n:.1f}%)")
     return ids
 
 def dodaj_atribut(p_vm, vm, nazivi, kolona, parser, prioritet = None, opseg=None):
@@ -29,9 +29,5 @@ def dodaj_atribut(p_vm, vm, nazivi, kolona, parser, prioritet = None, opseg=None
 
     if opseg:
         lo, hi = opseg
-        #van = p_vm.loc[~((p_vm[kolona] < lo) | (p_vm[kolona] > hi))]
-        van = (~p_vm[kolona].between(lo, hi) & p_vm[kolona].notna()).sum()
-        if van:
-            print(f"  {kolona}: {van} vrednosti van opsega [{lo},{hi}] -> None")
         p_vm.loc[~p_vm[kolona].between(lo, hi), kolona] = None
     return p_vm

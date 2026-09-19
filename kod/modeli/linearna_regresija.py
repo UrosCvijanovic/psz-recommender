@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from modeli.training.linear_regression import LinearRegression
 from obrada.priprema.kategorije import ves_masine, frizideri, televizori
 
-IZLAZ = Path(__file__).resolve().parent / "obuceni.json"
+IZLAZ = Path(__file__).resolve().parent / "obuceni_short.json"
 MODULI = [ves_masine, televizori, frizideri]
 
 def calculate_rmse(y_true, y_pred):
@@ -76,6 +76,7 @@ def main():
         y_pred = mlr.predict(x_test)
 
         rmse_value = calculate_rmse(y_test, y_pred)
+        rmse_rsd = calculate_rmse(np.exp(y_test), np.exp(y_pred))
         r2_score = calculate_r2(y_test, y_pred)
         #mlr.plot_loss()
 
@@ -83,7 +84,6 @@ def main():
             "ukupno_proizvoda": len(df),
             "trening_proizvoda": len(x_train),
             "test_proizvoda": len(x_test),
-            "ukupno_proizvoda": len(df),
             "weights": mlr.weights.tolist(),
             "bias": float(mlr.bias),
             "mean": mlr.mean.tolist(),
@@ -92,6 +92,7 @@ def main():
             "broj_kolona": len(list(X.columns)),
             "r2": r2_score,
             "rmse": rmse_value,
+            "rmse_rsd": rmse_rsd,
             "medijane": med.to_dict(),
             "numericki": modul.NUMERICKI,
             "opcije": {k: sorted(df[k].dropna().unique().tolist()) for k in modul.KATEGORICKI},

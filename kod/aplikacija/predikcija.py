@@ -43,7 +43,39 @@ def predvidi_za_id(kat, pid):
     print(f"Predvidjena: {pred}\n")
     print(f"Stvarna: {float(r.cena)}")
     print(f"Razlika: {float(r.cena) - pred}")
-    return {"stvarna": float(r.cena), "predvidjena": round(pred)}
+    return {
+        "stvarna": float(r.cena),
+        "predvidjena": round(pred),
+        "proizvod": r,
+        "atributi": unos,
+        "odstupanje": round(abs(float(r.cena) - pred) / float(r.cena) * 100, 1),
+    }
+
+def predvidi_rucno(kat, form):
+    m = MODELI[kat]
+
+    unos = {}
+    greske = []
+
+    for k in m["numericki"]:
+        v = form.get(f"num_{k}", "").strip()
+        if v:
+            try:
+                unos[k] = float(v.replace(",", "."))
+            except ValueError:
+                greske.append(f"{v} nije broj za polje {k}")
+
+    for k in m["opcije"]:
+        v = form.get(f"kat_{k}", "").strip()
+        if v:
+            unos[k] = v
+
+    if greske:
+        return {"greska": "; ".join(greske), "atributi": unos }
+
+    pred = predvidi(kat, unos)
+    return { "predvidjena": round(pred), "atributi": unos }
+
 
 def sklopi_red(kat, unos):
     m = MODELI[kat]
@@ -51,9 +83,10 @@ def sklopi_red(kat, unos):
     red.update(m["medijane"])
 
     for kljuc, vrednost in unos.items():
-        if kljuc in red and not any(kljuc == k.split("_")[0] for k in m["opcije"]):
+        if kljuc in m["numericki"]:
             red[kljuc] = float(vrednost)
         else:
+            # kategoricki atributi
             kolona = f"{kljuc}_{vrednost}"
             if kolona in red:
                 red[kolona] = 1.0

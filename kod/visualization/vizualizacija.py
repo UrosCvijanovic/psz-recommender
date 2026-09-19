@@ -38,7 +38,7 @@ def grafikon_brendovi(df):
     for bar, n, p in zip(bars, top_n.values, procenti.values):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{n}\n{p:.1f}%", ha="center", va="bottom")
 
-    ax.set_title(f"5 najzastupljenijih brendova (ukupno {ukupno} ponuda)")
+    ax.set_title(f"10 najzastupljenijih brendova (ukupno {ukupno} ponuda)")
     ax.set_ylabel("Broj proizvoda")
     ax.set_ylim(0, top_n.max() * 1.20)  # 20% eksta prosora na y-osi za tekst
     plt.xticks(rotation=45, ha="right")

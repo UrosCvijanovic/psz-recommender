@@ -23,11 +23,11 @@
 
     {% for a in atributi %}
         <label> {{ a }}
-            <input type="number" name="tez_{{ a }}", min="0" max="100" value="0"> %
+            <input type="number" name="tez_{{ a }}" min="0" max="100" value="0"> %
         </label> </br>
     {% endfor %}
 
-    <label> Broj Klasteri: <input type="number" name="k" min="2" max="10", value="3"> </label>
+    <label> Broj Klastera: <input type="number" name="k" min="2" max="10" value="3"> </label>
     <button type="submit">Klasteruj</button>
 </form>
 {% endif %}
@@ -37,14 +37,14 @@
 {% endif %}
 
 {% if rezultat %}
-<p>Inercija: {{ rezultat.inercija }}</p>
+<p>Inercija: {{ rezultat.inercija }} | Siluetni koeficijent: {{ rezultat.silueta }} </p>
 
 <table border="1" cellpadding="6">
     <tr>
         <th>Klaster</th>
         <th>Broj proizvoda</th>
         <th>Centar</th>
-        <th>Medijana cene</th>
+        <th>Prosecna cena</th>
         <th>Brendovi</th>
         <th>Primeri (najskuplji)</th>
     </tr>
@@ -55,7 +55,7 @@
          <td>
             {% for atr, v in c.centar.items() %}{{ atr }}: {{ v }}<br>{% endfor %}
         </td>
-        <td>{{ c.cena_medijana }}</td>
+        <td> {{ '%0.2f' |format(c.cena_prosek | float) }}</td>
         <td>{{ c.brendovi.keys() | join(', ') }}</td>
          <td>
             {% for p in c.primeri %}{{ p.naziv }} {{ p.cena }}<br>{% endfor %}

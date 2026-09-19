@@ -68,13 +68,11 @@ def pripremi(ponude, specs):
 
     # filter po kategoriji
     vm = s[s.kategorija == KATEGORIJA]
-    # print(vm.shape)
     p_vm = ponude[ponude.kategorija == KATEGORIJA].copy()
 
     brend_freq = ponude.brend.value_counts()
 
     p_vm["brend_model"] = p_vm.brend.where(p_vm.brend.isin(brend_freq[brend_freq >= 30].index), "OSTALO")
-    print(p_vm.brend_model.nunique(), "brendova posle sazimanja")
 
     p_vm = dodaj_atribut(p_vm, vm, ["Dijagonala ekrana"], "dijagonala", parsiraj_broj, opseg=(20, 250))
     p_vm = dodaj_atribut(p_vm, vm, ["Rezolucija", "Rezolucija ekrana"],"rez", rezolucija_kategorija)
@@ -89,5 +87,4 @@ def pripremi(ponude, specs):
     lo, hi = CENA_OPSEG
     pre = len(p_vm)
     p_vm = p_vm[p_vm.cena.between(lo, hi)].copy()
-    print(f"Cena van opsega [{lo},{hi}]: odbaceno {pre - len(p_vm)}")
     return p_vm

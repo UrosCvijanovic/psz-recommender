@@ -1,3 +1,4 @@
+{% from 'makroi.html' import kartica %}
 {% extends 'base.html' %}
 
 {% block head %}
@@ -5,46 +6,99 @@
 {% endblock %}
 
 {% block body %}
-<h2>Procena cene</h2>
 
-<!-- 1. Izbor kategorije (GET, osvezava stranicu) -->
-<form method="get" action="/regresija">
-    <select name="kategorija" onchange="this.form.submit()">
-        <option value=""> -- izaberi kategoriju -- </option>
-        {% for k in kategorije %}
-            <option value="{{k}}" {% if k == izabrana %} selected {% endif %}> {{k}} </option>
+<h2> Procena cene na proizvodima iz test skupa </h2>
+
+{% if rezultat %}
+
+    {% if rezultat.greska %}
+        <p style="color: red;"> {{ rezultat.greska }} </p>
+        <a href="?kategorija={{ izabrana }}"> nazad </a>
+    {% else %}
+
+    {% if rezultat.proizvod is defined %}
+        <p>Izabrani proizvod</p>
+        {{ kartica(rezultat.proizvod) }}
+    {% endif %}
+
+    <p>Atributi koji ulaze u model:</p>
+    <ul>
+        {% for k, v in rezultat.atributi.items() %}
+            <li>{{ k }}: {{ v }}</li>
         {% endfor %}
-    </select>
-    <button type="submit"> Prikazi </button>
-</form>
+    </ul>
 
-{% if model %}
-<form method="post" action="/regresija">
-    <input type="hidden" name="kategorija" value="{{ izabrana }}">
-    {% for polje, medijana in model.medijane.items() %}
-        <label>
-            {{ polje }}
-            <input type="number" step="any" name="{{ polje }}" placeholder="{{ medijana }}">
-        </label><br>
-    {% endfor %}
+    {% if rezultat.stvarna is defined %}
+    <p>Stvarna cena:
+        <strong>{{ rezultat.stvarna }} RSD</strong>
+    </p>
+    {% endif %}
 
-    {% for polje, opcije in model.opcije.items() %}
-        <label>
-            {{ polje }}
-            <select name="{{ polje }}">
-                {% for o in opcije %}
-                    <option> {{ o }} </option>
-                {% endfor %}
-            </select>
-        </label><br>
-    {% endfor %}
+    <p>Procenjena cena:
+        <strong> {{ rezultat.predvidjena }} RSD
+            {% if model and model.rmse_rsd is defined %}
+                {{ model.rmse_rsd }} RSD
+            {% endif %}
+        </strong>
+    </p>
 
-    <button type="submit">Izračunaj</button>
+    {% if rezultat.odstupanje is defined %}
+        <p>Odstupanje: {{ rezultat.odstupanje }}%</p>
+    {% endif %}
 
-</form>
+    <a href="?kategorija={{ izabrana }}"> nazad na listu </a>
+    {% endif %}
+
+{% else %}
+
+    <form method="get">
+        <select name="kategorija" onchange="this.form.submit()">
+            <option value=""> -- izaberi kategoriju -- </option>
+            {% for k in kategorije %}
+                <option value="{{k}}" {% if k == izabrana %} selected {% endif %}> {{k}} </option>
+            {% endfor %}
+        </select>
+        <button type="submit"> Prikazi </button>
+    </form>
+
+
+    {% if izabrana and model %}
+        <h3> Rucni unos karakteristika </h3>
+        <form method="post">
+            <input type="hidden" name="kategorija" value="{{ izabrana }}">
+
+            {% for k in model.numericki %}
+                <label> {{k}}
+                    <input type="number" step="any" name="num_{{ k }}" placeholder="{{ model.medijane[k] | round(1) }}">
+                </label> <br>
+            {% endfor %}
+
+
+            {% for k, vrednosti in model.opcije.items() %}
+            <label> {{k}}
+                <select name="kat_{{ k }}">
+                    <option value=""> -- nije poznato -- </option>
+                    {% for v in vrednosti %}
+                        <option value="{{ v }}"> {{ v }} </option>
+                    {% endfor %}
+                </select>
+            </label> <br>
+            {% endfor %}
+
+            <button type="submit"> Proceni cenu </button>
+        </form>
+    {% endif %}
+
+{% if lista %}
+    <h3> Izaberi proizvod iz test skupa </h3>
+    <p>{{ lista | length }} proizvoda iz test skupa</p>
+    <div class="kartice" style="display: flex; flex-wrap: wrap; gap: 12px">
+        {% for p in lista %}
+            <a href="?kategorija={{ izabrana }}&indeks={{ p.id }}">{{ kartica(p) }}</a>
+        {% endfor %}
+    </div>
 {% endif %}
 
-<h3>Procenjena cena: {{ rezultat }} RSD</h3>
-
+{% endif %}
 
 {% endblock %}

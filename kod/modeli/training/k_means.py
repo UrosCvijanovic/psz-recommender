@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+SEEDOVI = (77, 1, 7, 42, 123)
+
 class KMeans:
     def __init__(self, k=3, n_iters: int = 1000, tezine = None, tol=1e-4, seed=714, debug = False) -> None:
         self.debug = debug
@@ -14,8 +16,6 @@ class KMeans:
         self.labels = None
         self.sum_squared_distance = None
         self.silhouette_score = None
-        self.X_std = None
-        self.history = {}
 
         # standardizacija
         self.mean = 0.0
@@ -30,7 +30,6 @@ class KMeans:
         self.std[self.std == 0] = 1
 
         X = self.standardize(X)
-        self.X_std = X
 
         if self.tezine is not None:
             X = X * self.tezine
@@ -46,41 +45,14 @@ class KMeans:
             # 3. reposition centroids
             stari = self.centroids.copy()
             self.reposition_centers(X, klase)
-            pomeraj = np.linalg.norm(self.centroids - stari)
+            pomeraj = np.sqrt(((self.centroids - stari) ** 2).sum())
             if pomeraj < self.tolerance:
-                self.labels = self.clusterize(X)
-                self.sum_squared_distance = self.loss(X, self.labels)
                 break
-            #print(self.centroids)
 
-            self.sum_squared_distance = self.loss(X, klase)
-
-            self.labels = klase
-            self.silhouette_score = self.silhouette(X, self.labels)
-
-        if self.debug:
-            print(self.centroids)
-            # Kreiraj 3D scatter plot sa bojama po klasterima
-            #self.plot_3d_interactive(X)
-            for i in range(self.k):
-                sc = plt.scatter(X[klase == i, 0], X[klase == i, 1], s=20, label=f"klaster {i}")
-                boja = sc.get_facecolor()[0]
-                plt.scatter(self.centroids[i, 0], self.centroids[i, 1], s=250, c=boja, marker="X", edgecolor="black", linewidths=1.5)
-            plt.legend()
-            plt.show()
-            plt.close()
+        self.labels = self.clusterize(X)
+        self.sum_squared_distance = self.loss(X, self.labels)
+        self.silhouette_score = self.silhouette(X, self.labels)
         return self
-
-    def predict(self, X):
-        """
-            Predikcija za nove uzorke.
-        """
-        X = np.asarray(X, dtype=float)
-        Xs = self.standardize(X)
-        if self.tezine is not None:
-            Xs = Xs * self.tezine
-        return self.clusterize(Xs)
-
 
     def initialize(self, X, n_uzoraka):
         # biramo k uzoraka iz podataka da budu centroidi na pocetku
@@ -92,7 +64,7 @@ class KMeans:
     def clusterize(self, X):
         kolone = []
         for i in range(self.k):
-            dist = np.linalg.norm(X - self.centroids[i], axis=1)  # (n, )
+            dist = np.sqrt(((X - self.centroids[i]) ** 2).sum(axis=1))
             kolone.append(dist)
         rastojanja = np.stack(kolone, axis=1)  # (n, k)
         return np.argmin(rastojanja, axis=1)
@@ -104,7 +76,7 @@ class KMeans:
 
     def loss(self, X, klase):
         """
-            𝐽𝑐(1),…,𝑐(𝑚),𝜇(1),…,𝜇𝐾=1𝑚෍𝑖 = 1/𝑚 ||𝑥(𝑖)−𝜇𝑐(𝑖)||2
+             J = (1/m)·Σᵢ ‖xᵢ − μ_c(i)‖²
         """
         total= 0.0
         for i in range(self.k):
@@ -117,7 +89,6 @@ class KMeans:
     def standardize(self, X):
         return (X - self.mean) / self.std
 
-
     def silhouette(self, X, klase):
         """
             Prosecan siluentni koeficijent, blize 1 = bolje razdvojeni koeficijenti
@@ -126,7 +97,6 @@ class KMeans:
             (mean distanca tacaka iz najblizeg klastera)
             silhouette koeficijent = (b - a) / max(a, b)
         """
-
         n = len(X)
         ocene = np.zeros(n)
 
@@ -141,7 +111,7 @@ class KMeans:
                 if len(tacke) == 0:
                     continue
 
-                d = np.linalg.norm(tacke - X[i], axis=1)
+                d = np.sqrt(((tacke - X[i]) ** 2).sum(axis=1))
                 if c == svoj:
                     if len(tacke) > 1:
                         a = d.sum() / (len(tacke) - 1)
@@ -154,3 +124,11 @@ class KMeans:
             else:
                 ocene[i] = (b - a) / max(a, b)
         return ocene.mean() # mean svih silhouette koeficijenata
+
+def najbolji_od(X, k, tezine=None, seedovi=SEEDOVI):
+    najbolji = None
+    for s in seedovi:
+        km = KMeans(k=k, seed=s, tezine=tezine).fit(X)
+        if najbolji is None or km.sum_squared_distance < najbolji.sum_squared_distance:
+            najbolji = km
+    return najbolji

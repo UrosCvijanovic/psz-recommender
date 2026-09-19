@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class LinearRegression:
-    def __init__(self, lr: int = 0.01, n_iters: int = 1000, modul: str = None) -> None:
+    def __init__(self, lr: float = 0.01, n_iters: int = 1000, modul: str = None, tol: float = 1e-9) -> None:
         self.lr = lr # learning rate (alpha)
+        self.tol = tol
         self.modul_name = modul
         self.n_iters = n_iters
         self.weights = None # koeficijenti (jedan po koloni)
@@ -25,11 +26,11 @@ class LinearRegression:
         self.std = X.std(axis=0)
         self.std[self.std==0] = 1
 
-
         X = self.standardize(X)
         num_samples, num_features = X.shape # X shape [N, f]
         self.weights = np.zeros(num_features) # W shape [f, 1]
 
+        prethodni_cost = np.inf
         for i in range(self.n_iters):
             # y_pred shape should be N, 1
             dj_dw, dj_db = self.gradijent(X, y)
@@ -40,6 +41,12 @@ class LinearRegression:
             self.history[i] = cost
             if i % 100 == 0:
                 print(f"Iteracija {i} Trosak: {cost}")
+
+            # rano zaustavljanje, trosak se vise ne menja znacajno
+            if abs(prethodni_cost - cost) < self.tol:
+                print(f"Konvergencija u iteraciji {i}, trosak: {cost}")
+                break
+            prethodni_cost = cost
 
         if self.modul_name is not None:
             with open(f'{self.modul_name}_loss_data.json', 'w') as fp:

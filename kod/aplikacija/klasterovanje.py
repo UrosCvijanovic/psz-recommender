@@ -1,10 +1,11 @@
-from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
 import numpy as np
-from matplotlib import pyplot as plt
-from modeli.training.k_means import KMeans
-from obrada.priprema.kategorije import ves_masine, frizideri, televizori
+from pathlib import Path
 from aplikacija import podaci
-
+from matplotlib import pyplot as plt
+from modeli.training.k_means import najbolji_od
+from obrada.priprema.kategorije import ves_masine, frizideri, televizori
 
 STATIC = Path(__file__).parent / "static"
 STATIC.mkdir(exist_ok=True)
@@ -63,11 +64,14 @@ def pokreni(kat, tezine, k):
     kolone = list(tezine.keys())
     d = df[kolone].dropna()
 
+    if len(d) < k:
+        greska = "Smanjite k"
+        return None, greska
     # normalizuj tezine
     ukupno = sum(tezine.values())
     w = np.array([tezine[c] / ukupno for c in kolone])
 
-    km = KMeans(k=k, seed=77, tezine=w).fit(d)
+    km = najbolji_od(d, k, tezine=w) # pokrecemo kmeans sa vise seedova i vracamo najbolji
 
     # centri nazad u originalne jedinice
     centri = (km.centroids / w) * km.std + km.mean
@@ -88,8 +92,14 @@ def pokreni(kat, tezine, k):
             "n": len(grupa),
             "centar": {c: round(float(v), 1) for c, v in zip(kolone, centri[i])},
             "cena_medijana": round(grupa.cena.median()),
+            "cena_prosek": round(grupa.cena.mean()),
             "brendovi": grupa.brend.value_counts().head(3).to_dict(),
             "primeri": grupa.nlargest(3, "cena")[["naziv", "cena"]].to_dict("records"),
         })
     nacrtaj(d, kolone, km, centri, w, k)
-    return {"klasteri": klasteri, "inercija": round(km.sum_squared_distance, 4)}
+    rez = {
+        "klasteri": klasteri,
+        "inercija": round(km.sum_squared_distance, 4),
+        "silueta": round(float(km.silhouette_score), 3)
+    }
+    return rez, None
